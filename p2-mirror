@@ -39,6 +39,7 @@ mirrorpath = ""
 domImpl = getDOMImplementation()
 
 def main(args=sys.argv):
+    global mirrorpath, verbose
     parser = argparse.ArgumentParser(description='Mirrors eclipse p2 '
         'repositories. This script takes a list of p2 repository names '
         'and urls from a file and uses equinox p2 mirrorApplication '
@@ -58,13 +59,13 @@ def main(args=sys.argv):
 
     args = parser.parse_args(args[1:])
 
+    mirrorpath = args.mirrorpath
     verbose = args.verbose
 
     if args.threads > 1:
         print "Starting %d threads... " % (args.threads)
 
         for i in range(args.threads):
-            mirrorpath = args.mirrorpath
             t = Thread(target = worker)
             t.daemon = True
             t.start()
