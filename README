@@ -1,11 +1,12 @@
 I wrote this because I was sick of the slowness of installing eclipse plugins.
-Most of this is provided by eclipse and is documented on the eclipse wiki[1].
+Most of this is provided by eclipse and is documented on the eclipse wiki[1,2].
 
 To use this, you need to have a recent (3.4+) installation of eclipse available
 on your path. This does not launch eclipse but uses an application embedded 
 within it... it works entirely in a console (cron friendly/no X required).
 
 [1] http://wiki.eclipse.org/Equinox_p2_Repository_Mirroring
+[2] http://wiki.eclipse.org/Equinox/p2/Composite_Repositories_(new)
 
 ----------------
 Output from '-h'
