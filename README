@@ -1,0 +1,49 @@
+I wrote this because I was sick of the slowness of installing eclipse plugins.
+Most of this is provided by eclipse and is documented on the eclipse wiki[1].
+
+To use this, you need to have a recent (3.4+) installation of eclipse available
+on your path. This does not launch eclipse but uses an application embedded 
+within it... it works entirely in a console (cron friendly/no X required).
+
+[1] http://wiki.eclipse.org/Equinox_p2_Repository_Mirroring
+
+----------------
+Output from '-h'
+----------------
+
+usage: p2-mirror [-h] [-t THREADS] REPO_LIST TARGET
+
+Mirrors eclipse p2 repositories. This script takes a list of p2 repository
+names and urls from a file and uses equinox p2 mirrorApplication to mirror
+each of them locally within a named directory.
+
+positional arguments:
+  REPO_LIST   Repository list file
+  TARGET      Path where repositories will be stored
+
+optional arguments:
+  -h, --help  show this help message and exit
+  -t THREADS  Number of threads to use (concurrent downloads)
+
+
+-------------------------------------
+Here's what I use in my repolist.txt:
+-------------------------------------
+# vim:ts=16:sw=16
+
+# Repository name       p2 repo URL
+
+helios-201009240900	http://download.eclipse.org/releases/helios/201009240900
+eclipse-3.6-updates	http://download.eclipse.org/eclipse/updates/3.6
+m2eclipse-updates	http://m2eclipse.sonatype.org/sites/m2e
+google-eclipse-3.6	http://dl.google.com/eclipse/plugin/3.6
+google-android-tools	https://dl-ssl.google.com/android/eclipse/
+google-gwt-designiner	http://dl.google.com/eclipse/inst/d2gwt/latest/3.6
+google-windowbuilder	http://dl.google.com/eclipse/inst/d2wbpro/latest/3.6
+google-codeproanalytix	http://dl.google.com/eclipse/inst/codepro/latest/3.6
+eclipse-egit-updates	http://download.eclipse.org/egit/updates
+eclipse-linuxtools	http://download.eclipse.org/technology/linuxtools/update
+eclipse-cdt-helios	http://download.eclipse.org/tools/cdt/releases/helios
+plugin-potpourri	http://eclipse-plugin-potpourri.googlecode.com/svn/trunk/org.dcarew.updatesite/
+
+

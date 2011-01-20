@@ -1,0 +1,180 @@
+#!/usr/bin/python
+""" 
+Eclipse p2 repository mirror script.
+
+Copyright (C) 2011  Mark Renouf
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+import os
+import re
+import sys
+import time
+import argparse
+import subprocess
+from Queue import Queue
+from threading import Thread
+from xml.etree import ElementTree
+from xml.dom import getDOMImplementation
+
+ARTIFACT="org.eclipse.equinox.p2.artifact.repository.mirrorApplication"
+METADATA="org.eclipse.equinox.p2.metadata.repository.mirrorApplication"
+METADATA_REPO="org.eclipse.equinox.internal.p2.metadata.repository.CompositeMetadataRepository"
+ARTIFACT_REPO="org.eclipse.equinox.internal.p2.metadata.repository.CompositeArtifactRepository"
+
+verbose=False
+q = Queue()
+mirrorpath = ""
+domImpl = getDOMImplementation()
+
+def main(args=sys.argv):
+    parser = argparse.ArgumentParser(description='Mirrors eclipse p2 '
+        'repositories. This script takes a list of p2 repository names '
+        'and urls from a file and uses equinox p2 mirrorApplication '
+        'to mirror each of them locally within a named directory.')
+
+    parser.add_argument('repolist', metavar='REPO_LIST', 
+	help='Repository list file')
+
+    parser.add_argument('mirrorpath', metavar='TARGET', 
+	help='Path where repositories will be stored')
+
+    parser.add_argument('-t', action='store', dest='threads', type=int, 
+	default=1,  help='Number of threads to use (concurrent downloads)')
+
+    parser.add_argument('-v', action='store_true', dest='verbose', 
+	default=False, help='Display detailed output during operation')
+
+    args = parser.parse_args(args[1:])
+
+    verbose = args.verbose
+
+    if args.threads > 1:
+        print "Starting %d threads... " % (args.threads)
+
+        for i in range(args.threads):
+            mirrorpath = args.mirrorpath
+            t = Thread(target = worker)
+            t.daemon = True
+            t.start()
+
+        for item in repo_list(args.repolist):
+            q.put(item)
+
+        q.join()
+    else:
+        for name, url in repo_list(args.repolist):
+            path = os.path.join(args.mirrorpath, name)
+            if not os.path.exists(path):
+                os.makedirs(path)
+            
+            mirror(ARTIFACT, url, path)
+            mirror(METADATA, url, path)
+
+    xml = open(os.path.join(args.mirrorpath, 'compositeContent.xml'), 'w')
+    xml.write(createCompositeMetadataXML(args.repolist).toprettyxml())
+    xml.close()
+
+    xml = open(os.path.join(args.mirrorpath, 'compositeArtifacts.xml'), 'w')
+    xml.write(createCompositeArtifactsXML(args.repolist).toprettyxml())
+    xml.close()
+
+def mirror(action, source, dest):
+    args = ["eclipse"]
+    if verbose:
+      args.append("-verbose")
+    args.extend(["-ignoreErrors", "-nosplash", "-consolelog", 
+	"-application", action, "-source", source, "-destination", dest])
+    p = subprocess.Popen(args)
+    p.wait()
+
+def usage():
+    print "Usage: repo-mirror [repository list] [mirror path]"
+
+def repo_list(filename):
+     f = open(filename)
+     for line in f:
+         m = re.search('^\s*?((?:[^#])\S(?<!#)\S+)\s+(\S*)$', line)
+         if m is not None:
+             yield [m.group(1), m.group(2)]
+
+def worker():
+    while True:
+        name, url = q.get()
+        print "Mirroring %s (%s)" % (name, url)
+        path = os.path.join(mirrorpath, name)
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        mirror(ARTIFACT, url, path)
+        mirror(METADATA, url, path)
+        q.task_done()
+
+
+def createCompositeMetadataXML(listing):
+    doc = domImpl.createDocument(None, None, None)
+    doc.appendChild(doc.createProcessingInstruction(
+	'compositeMetadataRepository', "version='1.0.0'"))
+    repo = doc.createElement('repository')
+    repo.setAttribute('name', '&quot;P2 Repository Mirror&quot;')
+    repo.setAttribute('type', METADATA_REPO)
+    repo.setAttribute('version', '1.0.0')
+    props = doc.createElement('properties')
+    props.setAttribute('size', '1')
+    p = doc.createElement('property')
+    p.setAttribute('name', 'p2.timestamp')
+    p.setAttribute('value', str(int(time.time())))
+    props.appendChild(p)
+    repo.appendChild(props)
+    children = doc.createElement('children')
+    for name, url in repo_list(listing):
+        child = doc.createElement('child')
+        child.setAttribute('location', name)
+        children.appendChild(child)
+    children.setAttribute('size', str(len(children.childNodes)))
+    repo.appendChild(children)
+    doc.appendChild(repo)
+    return doc
+
+def createCompositeArtifactsXML(listing):
+    doc = domImpl.createDocument(None, None, None)
+    doc.appendChild(doc.createProcessingInstruction(
+	'compositeArtifactRepository', "version='1.0.0'"))
+    repo = doc.createElement('repository')
+    repo.setAttribute('name', '"P2 Repository Mirror"')
+    repo.setAttribute('type', ARTIFACT_REPO)
+    repo.setAttribute('version', '1.0.0')
+    props = doc.createElement('properties')
+    props.setAttribute('size', '1')
+    p = doc.createElement('property')
+    p.setAttribute('name', 'p2.timestamp')
+    p.setAttribute('value', str(int(time.time())))
+    props.appendChild(p)
+    repo.appendChild(props)
+    children = doc.createElement('children')
+    for name, url in repo_list(listing):
+        child = doc.createElement('child')
+        child.setAttribute('location', name)
+        children.appendChild(child)
+    children.setAttribute('size', str(len(children.childNodes)))
+    repo.appendChild(children)
+    doc.appendChild(repo)
+    return doc
+
+if __name__ == "__main__":
+    main()
+
+
+
