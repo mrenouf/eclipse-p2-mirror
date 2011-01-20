@@ -1,5 +1,5 @@
 #!/usr/bin/python
-""" 
+"""
 Eclipse p2 repository mirror script.
 
 Copyright (C) 2011  Mark Renouf
@@ -45,16 +45,16 @@ def main(args=sys.argv):
         'and urls from a file and uses equinox p2 mirrorApplication '
         'to mirror each of them locally within a named directory.')
 
-    parser.add_argument('repolist', metavar='REPO_LIST', 
+    parser.add_argument('repolist', metavar='REPO_LIST',
 	help='Repository list file')
 
-    parser.add_argument('mirrorpath', metavar='TARGET', 
+    parser.add_argument('mirrorpath', metavar='TARGET',
 	help='Path where repositories will be stored')
 
-    parser.add_argument('-t', action='store', dest='threads', type=int, 
+    parser.add_argument('-t', action='store', dest='threads', type=int,
 	default=1,  help='Number of threads to use (concurrent downloads)')
 
-    parser.add_argument('-v', action='store_true', dest='verbose', 
+    parser.add_argument('-v', action='store_true', dest='verbose',
 	default=False, help='Display detailed output during operation')
 
     args = parser.parse_args(args[1:])
@@ -79,7 +79,7 @@ def main(args=sys.argv):
             path = os.path.join(args.mirrorpath, name)
             if not os.path.exists(path):
                 os.makedirs(path)
-            
+
             mirror(ARTIFACT, url, path)
             mirror(METADATA, url, path)
 
@@ -95,7 +95,7 @@ def mirror(action, source, dest):
     args = ["eclipse"]
     if verbose:
       args.append("-verbose")
-    args.extend(["-ignoreErrors", "-nosplash", "-consolelog", 
+    args.extend(["-ignoreErrors", "-nosplash", "-consolelog",
 	"-application", action, "-source", source, "-destination", dest])
     p = subprocess.Popen(args)
     p.wait()
