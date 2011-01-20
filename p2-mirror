@@ -26,7 +26,6 @@ import argparse
 import subprocess
 from Queue import Queue
 from threading import Thread
-from xml.etree import ElementTree
 from xml.dom import getDOMImplementation
 
 ARTIFACT="org.eclipse.equinox.p2.artifact.repository.mirrorApplication"
