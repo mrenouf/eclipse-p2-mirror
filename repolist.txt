@@ -1,0 +1,20 @@
+# vim:ts=16:sw=16
+
+# Repository name               p2 repo URL
+
+helios-201009240900	http://download.eclipse.org/releases/helios/201009240900
+workspace-mechanic	http://workspacemechanic.eclipselabs.org.codespot.com/hg.update/mechanic
+eclipse-3.6-updates	http://download.eclipse.org/eclipse/updates/3.6
+m2eclipse-updates	http://m2eclipse.sonatype.org/sites/m2e
+avr-eclipse-plugin	http://avr-eclipse.sourceforge.net/updatesite/
+avr32-studio-2.6                http://distribute.atmel.no/tools/avr32studio/releases/2.6.0.753
+google-eclipse-3.6	http://dl.google.com/eclipse/plugin/3.6
+google-android-tools	https://dl-ssl.google.com/android/eclipse/
+google-gwt-designiner	http://dl.google.com/eclipse/inst/d2gwt/latest/3.6
+google-windowbuilder	http://dl.google.com/eclipse/inst/d2wbpro/latest/3.6
+google-codeproanalytix	http://dl.google.com/eclipse/inst/codepro/latest/3.6
+eclipse-egit-updates	http://download.eclipse.org/egit/updates
+eclipse-linuxtools	http://download.eclipse.org/technology/linuxtools/update
+eclipse-cdt-helios	http://download.eclipse.org/tools/cdt/releases/helios
+#plugin-potpourri	http://eclipse-plugin-potpourri.googlecode.com/svn/trunk/org.dcarew.updatesite/
+eclupse-colorscheme             http://eclipse-color-theme.github.com/update
