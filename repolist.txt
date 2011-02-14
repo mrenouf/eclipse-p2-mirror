@@ -17,4 +17,5 @@ eclipse-egit-updates	http://download.eclipse.org/egit/updates
 eclipse-linuxtools	http://download.eclipse.org/technology/linuxtools/update
 eclipse-cdt-helios	http://download.eclipse.org/tools/cdt/releases/helios
 #plugin-potpourri	http://eclipse-plugin-potpourri.googlecode.com/svn/trunk/org.dcarew.updatesite/
-eclupse-colorscheme             http://eclipse-color-theme.github.com/update
+eclipse-colorscheme	http://eclipse-color-theme.github.com/update
+chronon-debugger	http://chrononsystems.com/updatesite
